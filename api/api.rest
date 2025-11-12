@@ -1,0 +1,88 @@
+###
+GET http://localhost:3000/ 
+
+###
+GET http://localhost:3000/data/
+
+###
+GET http://localhost:3000/index 
+
+
+### 
+POST http://localhost:3000/data
+Content-Type: application/json
+
+{
+    "id": "3",
+    "forename": "New",
+    "surname": "User"
+}
+
+
+### post json
+POST http://localhost:3000/data
+Content-Type: application/json
+
+{
+    "id": "10",
+    "forename": "New",
+    "surname": "User"
+}
+
+### test unsupported type
+POST http://localhost:3000/data
+Content-Type: text/csv
+
+{
+    "id": "3",
+    "forename": "Roy",
+    "surname": "User"
+}
+
+
+###
+DELETE http://localhost:3000/data/14
+
+### put json
+PUT http://localhost:3000/data/90
+Content-Type: application/json
+
+{
+    //"id": "10",
+    "forename": "Roy",
+    "surname": "User"
+}
+
+### put unsupported type
+PUT http://localhost:3000/data/100
+Content-Type: text/csv
+
+{
+    //"id": "10",
+    "forename": "New",
+    "surname": "User"
+}
+
+###
+POST http://localhost:3000/data/search
+Content-Type: application/json
+
+{
+  "forename": "Roy"
+}
+
+###
+POST http://localhost:3000/data/search
+Content-Type: application/json
+
+{
+  "surname": "User"
+}
+
+###
+POST http://localhost:3000/data/search
+Content-Type: application/json
+
+{
+  "forename": "Not in list"
+}

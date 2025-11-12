@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: API programming task 6
+  version: 1.0.0
+  description: >
+
+servers:
+  - url: http://localhost:3000
+paths:
+  /data:
+    get:
+      summary: Get data 
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: Data not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Add new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Created
+        '415':
+          description: Unsupported Media Type
+        '422':
+          description: Unprocessable content
+  /data/{id}:
+    delete:
+      summary: Delete user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: ID not found
+    put:
+      summary: Update or create user by ID 
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+        '415':
+          description: Unsupported Media Type
+        '422':
+          description: Unprocessable content
+  /data/search:
+    post:
+      summary: Search a user by surname or forename
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forename:
+                  type: string
+                  example: Tim
+                surname:
+                  type: string
+                  example: Lee
+      responses:
+        '200':
+          description: Search result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Data:
+      type: array
+      items:
+          type: object
+          items:
+              $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        forename:
+          type: string
+          example: Roy
+        surname:
+          type: string
+          example: Fielding
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Data not found"
