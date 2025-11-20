@@ -1,15 +1,20 @@
 openapi: 3.0.0
 info:
-  title: API programming task 6
+  title: API programming task 7
   version: 1.0.0
   description: >
 
 servers:
   - url: http://localhost:3000
+
+security:
+  - BearerAuth: []
+
 paths:
   /data:
     get:
-      summary: Get data 
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: List of users
@@ -25,8 +30,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Add new user
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -36,13 +49,34 @@ paths:
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '415':
           description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /data/{id}:
     delete:
       summary: Delete user by ID
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path
@@ -52,10 +86,20 @@ paths:
       responses:
         '204':
           description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
         '404':
           description: ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     put:
       summary: Update or create user by ID 
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path
@@ -71,15 +115,40 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '415':
           description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /data/search:
     post:
       summary: Search a user by surname or forename
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -108,14 +177,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /login:
+    post:
+      summary: User login and token generation
+      description: >
+        Verifying the username and password. If successful, creating a token to access the data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: user
+                password:
+                  type: string
+                  example: password
+      responses:
+        '200':
+          description: Successful login
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: HttpOnly refresh token cookie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: user
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  token_type:
+                    type: string
+                    example: Bearer
+                  expires_in:
+                    type: string
+                    example: "1h"
+        '401':
+          description: Login failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Data:
       type: array
       items:
-          type: object
-          items:
-              $ref: '#/components/schemas/User'
+        type: object
+        items:
+          $ref: '#/components/schemas/User'
+
     User:
       type: object
       properties:
@@ -128,9 +259,17 @@ components:
         surname:
           type: string
           example: Fielding
+
     Error:
       type: object
       properties:
         error:
           type: string
           example: "Data not found"
+    
+    Info:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "OK"

@@ -86,3 +86,41 @@ Content-Type: application/json
 {
   "forename": "Not in list"
 }
+
+
+
+### test data without token
+GET http://localhost:3000/data
+
+
+
+### test login
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "username": "user",
+    "password": "password"
+}
+
+
+### test login using wrong data
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "username": "not user",
+    "password": "not password"
+}
+
+
+### test data with token
+GET http://localhost:3000/data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJpYXQiOjE3NjM2NjA3MDcsImV4cCI6MTc2MzY2NDMwN30.3d9ZHGx2NpxtwaxRukoajfzz5MaCrZI8dchxzuTiG1U
+Accept: application/json
+
+
+
+
+
+
